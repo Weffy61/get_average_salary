@@ -56,6 +56,7 @@ def predict_rub_salary(vacancy):
         'per_page': 100
     }
     response = requests.get('https://api.hh.ru/vacancies/', params=payload)
+    response.raise_for_status()
     for page in range(response.json()['pages']):
         page_payload = {
             'text': f'Разработчик {vacancy}',
@@ -65,6 +66,7 @@ def predict_rub_salary(vacancy):
             'page': page
         }
         response_pagination = requests.get('https://api.hh.ru/vacancies/', params=page_payload)
+        response_pagination.raise_for_status()
         time.sleep(0.5)
         for salary in response_pagination.json()['items']:
             if salary['salary']:
@@ -95,6 +97,7 @@ def predict_rub_salary_for_superjob(vacancy, api_key):
         'X-Api-App-Id': api_key
     }
     response = requests.get('https://api.superjob.ru/2.0/vacancies/', headers=headers, params=payload)
+    response.raise_for_status()
     page_counter = math.ceil(response.json()['total'] / 100)
 
     for page in range(page_counter):
@@ -107,6 +110,7 @@ def predict_rub_salary_for_superjob(vacancy, api_key):
 
         response_pagination = requests.get('https://api.superjob.ru/2.0/vacancies/', headers=headers,
                                            params=page_payload)
+        response_pagination.raise_for_status()
         time.sleep(1)
         for salary in response_pagination.json()['objects']:
             if salary['payment_from'] > 0 and salary['payment_to'] > 0:

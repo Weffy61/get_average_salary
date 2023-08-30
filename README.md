@@ -1,7 +1,7 @@
 # Получение статистики для разработчиков
 Данный скрипт выводит статистику по заработной плате разработчиков самых популярных [ЯП](https://habr.com/post/310262/) 
 на основании обьявлений [hh.ru](https://hh.ru/) и [superjob.ru](https://superjob.ru/) по г. Москва
-# ## Установка
+## Установка
 ```commandline
 git clone https://github.com/Weffy61/get_average_salary
 ```

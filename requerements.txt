@@ -1,3 +1,4 @@
 requests==2.31.0
 terminaltables==3.1.10
 tqdm==4.66.1
+environs==9.5.0

@@ -33,16 +33,9 @@ def fetch_salaries_vacancies_hh(vacancy):
     moscow_city_id = 1
     days_in_month = 31
     ads_count = 100
-    payload = {
-        'text': f'Разработчик {vacancy}',
-        'area': moscow_city_id,
-        'period': days_in_month,
-        'per_page': ads_count
-    }
-    response = requests.get('https://api.hh.ru/vacancies/', params=payload)
-    response.raise_for_status()
-    vacancies_count = response.json()['found']
-    for page in range(response.json()['pages']):
+    vacancies_count = None
+
+    for page in itertools.count():
         page_payload = {
             'text': f'Разработчик {vacancy}',
             'area': moscow_city_id,
@@ -52,8 +45,9 @@ def fetch_salaries_vacancies_hh(vacancy):
         }
         response_from_each_page = requests.get('https://api.hh.ru/vacancies/', params=page_payload)
         response_from_each_page.raise_for_status()
+        response = response_from_each_page.json()
         time.sleep(0.5)
-        for vacant_position in response_from_each_page.json()['items']:
+        for vacant_position in response['items']:
             if vacant_position['salary']:
                 if vacant_position['salary']['currency'] != 'RUR':
                     salaries.append(None)
@@ -63,6 +57,9 @@ def fetch_salaries_vacancies_hh(vacancy):
                 salaries.append(get_average_salary(min_salary, max_salary))
             else:
                 salaries.append(None)
+        if response['page'] == response['pages'] - 1:
+            vacancies_count = response['found']
+            break
     return salaries, vacancies_count
 
 

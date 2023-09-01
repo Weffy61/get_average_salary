@@ -1,9 +1,9 @@
 import time
 import requests
 from terminaltables import AsciiTable
-import math
 from environs import Env
 from tqdm import tqdm
+import itertools
 
 
 def draw_table(statistic: dict, table_tittle):
@@ -70,38 +70,30 @@ def fetch_salaries_vacancies_sj(vacancy, api_key):
     salaries = []
     moscow_city_id = 4
     ads_count = 100
-    payload = {
-        'keyword': f'Разработчик {vacancy}',
-        'town': moscow_city_id,
-        'count': ads_count
-    }
-    headers = {
-        'X-Api-App-Id': api_key
-    }
-    response = requests.get('https://api.superjob.ru/2.0/vacancies/', headers=headers, params=payload)
-    response.raise_for_status()
-    vacancies_count = response.json()['total']
-    page_counter = math.ceil(response.json()['total'] / 100)
-
-    for page in range(page_counter):
+    vacancies_count = None
+    for page in itertools.count():
         page_payload = {
             'keyword': f'Разработчик {vacancy}',
             'town': moscow_city_id,
             'count': ads_count,
             'page': page
         }
+        headers = {'X-Api-App-Id': api_key}
 
         response_from_each_page = requests.get('https://api.superjob.ru/2.0/vacancies/', headers=headers,
                                                params=page_payload)
         response_from_each_page.raise_for_status()
-        time.sleep(1)
-        for vacant_position in response_from_each_page.json()['objects']:
+        response = response_from_each_page.json()
+        for vacant_position in response['objects']:
             min_salary = vacant_position['payment_from']
             max_salary = vacant_position['payment_to']
             if min_salary == 0 and max_salary == 0:
                 salaries.append(None)
             else:
                 salaries.append(get_average_salary(min_salary, max_salary))
+        if not response['more']:
+            vacancies_count = response['total']
+            break
     return salaries, vacancies_count
 
 

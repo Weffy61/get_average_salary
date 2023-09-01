@@ -9,8 +9,8 @@ import itertools
 def draw_table(statistic: dict, table_tittle):
     vacancy_table = [['Язык программирования', 'Вакансий найдено', 'Вакансий обработано', 'Средняя зарплата']]
     for language, stats in statistic.items():
-        raw = [language, stats['vacancies_found'], stats['vacancies_processed'], stats['average_salary']]
-        vacancy_table.append(raw)
+        line = [language, stats['vacancies_found'], stats['vacancies_processed'], stats['average_salary']]
+        vacancy_table.append(line)
     table_instance = AsciiTable(vacancy_table, title=table_tittle)
     table_instance.justify_columns[2] = 'right'
     return table_instance.table

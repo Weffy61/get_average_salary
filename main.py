@@ -19,9 +19,9 @@ def draw_table(statistic: dict, table_tittle):
 def get_average_salary(min_salary, max_salary):
     if min_salary and min_salary > 0 and max_salary and max_salary > 0:
         salary = (min_salary + max_salary) / 2
-    elif min_salary and min_salary > 0 and (max_salary == 0 or not max_salary):
+    elif min_salary and min_salary > 0 and not max_salary:
         salary = min_salary * 1.2
-    elif (not min_salary or min_salary == 0) and max_salary > 0:
+    elif not min_salary and max_salary > 0:
         salary = max_salary * 0.8
     else:
         return
@@ -84,7 +84,7 @@ def fetch_salaries_vacancies_sj(vacancy, api_key):
         for vacant_position in response['objects']:
             min_salary = vacant_position['payment_from']
             max_salary = vacant_position['payment_to']
-            if min_salary == 0 and max_salary == 0:
+            if not min_salary and not max_salary:
                 salaries.append(None)
             else:
                 salaries.append(get_average_salary(min_salary, max_salary))

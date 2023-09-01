@@ -48,15 +48,11 @@ def fetch_salaries_vacancies_hh(vacancy):
         response = response_from_each_page.json()
         time.sleep(0.5)
         for vacant_position in response['items']:
-            if vacant_position['salary']:
-                if vacant_position['salary']['currency'] != 'RUR':
-                    salaries.append(None)
-                    break
+            if vacant_position['salary'] and vacant_position['salary']['currency'] == 'RUR':
                 min_salary = vacant_position['salary']['from']
                 max_salary = vacant_position['salary']['to']
                 salaries.append(get_average_salary(min_salary, max_salary))
-            else:
-                salaries.append(None)
+            salaries.append(None)
         if response['page'] == response['pages'] - 1:
             vacancies_count = response['found']
             break

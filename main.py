@@ -52,7 +52,7 @@ def fetch_salaries_vacancies_hh(vacancy):
                 min_salary = vacant_position['salary']['from']
                 max_salary = vacant_position['salary']['to']
                 salaries.append(get_average_salary(min_salary, max_salary))
-            salaries.append(None)
+            continue
         if response['page'] == response['pages'] - 1:
             vacancies_count = response['found']
             break
@@ -81,9 +81,8 @@ def fetch_salaries_vacancies_sj(vacancy, api_key):
             min_salary = vacant_position['payment_from']
             max_salary = vacant_position['payment_to']
             if not min_salary and not max_salary:
-                salaries.append(None)
-            else:
-                salaries.append(get_average_salary(min_salary, max_salary))
+                continue
+            salaries.append(get_average_salary(min_salary, max_salary))
         if not response['more']:
             vacancies_count = response['total']
             break
@@ -93,15 +92,11 @@ def fetch_salaries_vacancies_sj(vacancy, api_key):
 def get_hh_statistic(languages):
     vacancies_statistic = {}
     for language in tqdm(languages, unit='language', desc='Load Statistic Progress (HH)'):
-        average_salaries = []
         offered_salaries, vacancies_count = fetch_salaries_vacancies_hh(language)
-        for salary in offered_salaries:
-            if salary:
-                average_salaries.append(salary)
         vacancies_statistic[language] = {
             'vacancies_found': vacancies_count,
-            'vacancies_processed': len(average_salaries),
-            'average_salary': int(sum(average_salaries) / len(average_salaries))
+            'vacancies_processed': len(offered_salaries),
+            'average_salary': int(sum(offered_salaries) / len(offered_salaries))
         }
     return vacancies_statistic
 
@@ -109,15 +104,11 @@ def get_hh_statistic(languages):
 def get_sj_statistic(languages, api_key):
     vacancies_statistic = {}
     for language in tqdm(languages, unit='language', desc='Load Statistic Progress (SJ)'):
-        average_salaries = []
         offered_salaries, vacancies_count = fetch_salaries_vacancies_sj(language, api_key)
-        for salary in offered_salaries:
-            if salary:
-                average_salaries.append(salary)
         vacancies_statistic[language] = {
             'vacancies_found': vacancies_count,
-            'vacancies_processed': len(average_salaries),
-            'average_salary': int(sum(average_salaries) / len(average_salaries))
+            'vacancies_processed': len(offered_salaries),
+            'average_salary': int(sum(offered_salaries) / len(offered_salaries))
         }
     return vacancies_statistic
 
@@ -127,8 +118,8 @@ def main():
     env.read_env()
     superjob_api_key = env.str('SUPER_JOB_KEY')
     programming_languages = ['JavaScript', 'Java', 'Python', 'Ruby', 'PHP', 'C++', 'C#', 'C', 'Go']
-    sj_table = draw_table(get_sj_statistic(programming_languages, superjob_api_key), 'SuperJob Moscow')
     hh_table = draw_table(get_hh_statistic(programming_languages), 'HeadHunter Moscow')
+    sj_table = draw_table(get_sj_statistic(programming_languages, superjob_api_key), 'SuperJob Moscow')
     print(hh_table)
     print(sj_table)
 

@@ -52,7 +52,6 @@ def fetch_salaries_vacancies_hh(vacancy):
                 min_salary = vacant_position['salary']['from']
                 max_salary = vacant_position['salary']['to']
                 salaries.append(get_average_salary(min_salary, max_salary))
-            continue
         if response['page'] == response['pages'] - 1:
             vacancies_count = response['found']
             break

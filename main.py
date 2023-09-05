@@ -92,11 +92,13 @@ def get_hh_statistic(languages):
     vacancies_statistic = {}
     for language in tqdm(languages, unit='language', desc='Load Statistic Progress (HH)'):
         offered_salaries, vacancies_count = fetch_salaries_vacancies_hh(language)
-        vacancies_statistic[language] = {
-            'vacancies_found': vacancies_count,
-            'vacancies_processed': len(offered_salaries),
-            'average_salary': int(sum(offered_salaries) / len(offered_salaries))
-        }
+        if offered_salaries:
+            vacancies_statistic[language] = {
+                'vacancies_found': vacancies_count,
+                'vacancies_processed': len(offered_salaries),
+                'average_salary': int(sum(offered_salaries) / len(offered_salaries))
+            }
+        continue
     return vacancies_statistic
 
 
@@ -104,11 +106,13 @@ def get_sj_statistic(languages, api_key):
     vacancies_statistic = {}
     for language in tqdm(languages, unit='language', desc='Load Statistic Progress (SJ)'):
         offered_salaries, vacancies_count = fetch_salaries_vacancies_sj(language, api_key)
-        vacancies_statistic[language] = {
-            'vacancies_found': vacancies_count,
-            'vacancies_processed': len(offered_salaries),
-            'average_salary': int(sum(offered_salaries) / len(offered_salaries))
-        }
+        if offered_salaries:
+            vacancies_statistic[language] = {
+                'vacancies_found': vacancies_count,
+                'vacancies_processed': len(offered_salaries),
+                'average_salary': int(sum(offered_salaries) / len(offered_salaries))
+            }
+        continue
     return vacancies_statistic
 
 
